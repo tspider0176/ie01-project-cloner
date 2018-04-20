@@ -39,3 +39,11 @@ curl -o out1.json -v -H "Authorization: token be84762b9055050048a46f671e9411b920
 curl -o out2.json -v -H "Authorization: token be84762b9055050048a46f671e9411b920d92708" https://api.github.com/orgs/ie03-aizu/members?page=2\&per_page=100
 
 授業のメーリングリストのcsvとGitHub classroom のexcelを食わせ、対象のクラスを入力すると、自動的にリポジトリから対象の生徒が参加しているチームのプロジェクトのリポジトリをローカルに全てクローンしてくる
+
+### 仕様
+入力：
+メーリングリストからダウンロードしたcsvファイル
+GitHub Classroomからダウンロードしたcsvファイル
+
+二つの入力を元に、特定の演習室の履修生のみの[学籍番号, GitHubアカウントID]となるリストを作成
+
