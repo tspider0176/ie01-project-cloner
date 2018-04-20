@@ -17,4 +17,4 @@ classroom_roster = all_student.drop(1).select do |item|
   classroom.map(&:first).include?(item.first.split('_').first)
 end
 
-p classroom_roster
+classroom_roster.map { |item| item.join(',') }.join("\n")
