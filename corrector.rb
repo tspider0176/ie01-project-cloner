@@ -17,4 +17,5 @@ classroom_roster = all_student.drop(1).select do |item|
   classroom.map(&:first).include?(item.first.split('_').first)
 end
 
-classroom_roster.map { |item| item.join(',') }.join("\n")
+puts 'student ID, name and GitHub ID for std5'
+puts classroom_roster.reject { |arr| arr[1] == '' }.map { |item| item.join(',') }.join("\n")
