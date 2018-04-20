@@ -9,10 +9,12 @@ roster_csv.each do |data|
 end
 
 classroom = []
-mailing_list_csv.each do ||
+mailing_list_csv.each do |data|
   classroom.push(data)
 end
 
-puts classroom
-puts
-puts all_student
+classroom_roster = all_student.drop(1).select do |item|
+  classroom.map(&:first).include?(item.first.split('_').first)
+end
+
+p classroom_roster
