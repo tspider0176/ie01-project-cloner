@@ -36,3 +36,17 @@ File.open('out.json', 'r') do |f|
   hash = JSON.parse(f.read)
 end
 
+`rm out.json`
+
+# Get team id list
+id_list = hash.map do |item|
+  item['id']
+end
+
+# Get value all of member URL from key 'members_url'
+# Delete last {\members}
+id_list.each do |id|
+  `curl -o #{id}_members.json -v -H "Authorization: token #{token}" https://api.github.com/teams/#{id}/members`
+end
+
+`mv *.json ./temp/`
