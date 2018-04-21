@@ -46,6 +46,7 @@ end
 # Get value all of member URL from key 'members_url'
 # Delete last {\members}
 id_list.each do |id|
+  puts 'getting members for each team ID...'
   `curl -o #{id}_members.json -v -H "Authorization: token #{token}" https://api.github.com/teams/#{id}/members`
 end
 
