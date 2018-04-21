@@ -1,6 +1,8 @@
 require 'csv'
 require 'json'
 
+EP = 'https://api.github.com/'.freeze
+
 roster_csv = CSV.read('classroom_roster.csv', headers: false)
 mailing_list_csv = CSV.read('11-3002-IE03-std5.csv', headers: false)
 
@@ -21,7 +23,9 @@ end
 # output student ID, name and GitHub ID for std5
 puts classroom_roster.reject { |arr| arr[1] == '' }.map { |item| item.join(',') }.join("\n")
 
-github_id_list = classroom_roster.reject { |arr| arr[1] == '' }.map{ |elem| elem[1] }
+github_id_list = classroom_roster.reject { |arr| arr[1] == '' }.map do |elem|
+  elem[1]
+end
 
 puts 'Update team list?:(y/n)'
 printf '> '
@@ -35,7 +39,7 @@ if input != 'n'
   end
 
   # Get by GitHub API
-  `curl -o out.json -v -H "Authorization: token #{token}" https://api.github.com/orgs/ie03-aizu/teams`
+  `curl -o out.json -v -H "Authorization: token #{token}" #{EP}orgs/ie03-aizu/teams`
 
   hash = {}
   # Get all teams from out.json
@@ -53,7 +57,7 @@ if input != 'n'
   # Get value all of member URL from key 'members_url'
   id_list.each do |id|
     puts 'getting members for each team ID...'
-    `curl -o #{id}_members.json -v -H "Authorization: token #{token}" https://api.github.com/teams/#{id}/members`
+    `curl -o #{id}.json -H "Authorization: token #{token}" #{EP}teams/#{id}/members`
   end
 
   `mv *.json ./temp/`
@@ -65,7 +69,9 @@ Dir.glob('./temp/*.json') do |file|
   teamid = File.basename(file).split('_').first
   File.open(file, 'r') do |f|
     jsonarr = JSON.parse(f.read)
-    target_teams.push(teamid) unless jsonarr.select { |item| github_id_list.include?(item['login']) }.empty?
+    target_teams.push(teamid) unless jsonarr.select do |item|
+      github_id_list.include?(item['login'])
+    end.empty?
   end
 end
 
