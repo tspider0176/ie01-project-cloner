@@ -21,6 +21,8 @@ end
 # output student ID, name and GitHub ID for std5
 puts classroom_roster.reject { |arr| arr[1] == '' }.map { |item| item.join(',') }.join("\n")
 
+github_id_list = classroom_roster.reject { |arr| arr[1] == '' }.map{ |elem| elem[1] }
+
 puts 'Update team list?:(y/n)'
 printf '> '
 input = gets.chomp
@@ -56,3 +58,15 @@ if input != 'n'
 
   `mv *.json ./temp/`
 end
+
+# Search teams which contains student belonging to std5
+target_teams = []
+Dir.glob('./temp/*.json') do |file|
+  teamid = File.basename(file).split('_').first
+  File.open(file, 'r') do |f|
+    jsonarr = JSON.parse(f.read)
+    target_teams.push(teamid) unless jsonarr.select { |item| github_id_list.include?(item['login']) }.empty?
+  end
+end
+
+puts target_teams
