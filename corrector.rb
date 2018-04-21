@@ -57,7 +57,7 @@ if input != 'n'
   # Get value all of member URL from key 'members_url'
   id_list.each do |id|
     puts 'getting members for each team ID...'
-    `curl -o #{id}.json -H "Authorization: token #{token}" #{EP}teams/#{id}/members`
+    `curl -o #{id}_members.json -H "Authorization: token #{token}" #{EP}teams/#{id}/members`
   end
 
   `mv *.json ./temp/`
@@ -75,4 +75,14 @@ Dir.glob('./temp/*.json') do |file|
   end
 end
 
-puts target_teams
+target_team_ids = target_teams.map { |name| File.basename(name, '.*') }
+
+# Get all repositories for each detected team
+target_team_ids.each do |team_id|
+  `curl -o #{id}_members.json -H "Authorization: token #{token}" #{EP}teams/#{team_id}/repos`
+end
+
+
+# Create repository list which should be cloned to local except hello world repository
+
+
