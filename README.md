@@ -47,3 +47,6 @@ GitHub Classroomからダウンロードしたcsvファイル
 
 二つの入力を元に、特定の演習室の履修生のみの[学籍番号, GitHubアカウントID]となるリストを作成
 
+### GitHub認証
+アクセストークンの取得方法:
+http://tetu1984.hateblo.jp/entry/2012/09/30/235233
