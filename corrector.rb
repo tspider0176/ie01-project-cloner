@@ -3,24 +3,26 @@ require 'json'
 
 EP = 'https://api.github.com/'.freeze
 
-roster_csv = CSV.read('classroom_roster.csv', headers: false)
-mailing_list_csv = CSV.read('11-3002-IE03-std5.csv', headers: false)
-
 all_student = []
-roster_csv.each do |data|
-  all_student.push(data)
-end
-
 classroom = []
-mailing_list_csv.each do |data|
-  classroom.push(data)
+unless ARGV[0].nil? || ARGV[1].nil?
+  mailing_list_csv = CSV.read(ARGV[0], headers: false)
+  roster_csv = CSV.read(ARGV[1], headers: false)
+
+  roster_csv.each do |data|
+    all_student.push(data)
+  end
+
+  mailing_list_csv.each do |data|
+    classroom.push(data)
+  end
 end
 
 classroom_roster = all_student.drop(1).select do |item|
   classroom.map(&:first).include?(item.first.split('_').first)
 end
 
-# output student ID, name and GitHub ID for std5
+# output student ID, name and GitHub ID for inputted class
 puts classroom_roster.reject { |arr| arr[1] == '' }.map { |item| item.join(',') }.join("\n")
 
 github_id_list = classroom_roster.reject { |arr| arr[1] == '' }.map do |elem|
