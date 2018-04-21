@@ -81,3 +81,17 @@ target_team_ids.each do |team_id|
   `curl -o #{team_id}_repos.json -H "Authorization: token #{token}" #{EP}teams/#{team_id}/repos`
   `mv *json ./repos/`
 end
+
+# Create repository URL list which should be cloned to local
+clone_urls = []
+Dir.glob('./repos/*.json') do |file|
+  File.open(file, 'r') do |f|
+    jsonarr = JSON.parse(f.read)
+    clone_urls.push(jsonarr['clone_url'])
+  end
+end
+
+p clone_urls
+
+# clone repositories to local
+
