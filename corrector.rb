@@ -60,26 +60,26 @@ if input != 'n'
     `curl -o #{id}_members.json -H "Authorization: token #{token}" #{EP}teams/#{id}/members`
     `mv *.json ./temp/`
   end
-end
 
-# Search teams which contains student belonging to std5
-target_teams = []
-Dir.glob('./temp/*.json') do |file|
-  teamid = File.basename(file).split('_').first
-  File.open(file, 'r') do |f|
-    jsonarr = JSON.parse(f.read)
-    target_teams.push(teamid) unless jsonarr.select do |item|
-      github_id_list.include?(item['login'])
-    end.empty?
+  # Search teams which contains student belonging to std5
+  target_teams = []
+  Dir.glob('./temp/*.json') do |file|
+    teamid = File.basename(file).split('_').first
+    File.open(file, 'r') do |f|
+      jsonarr = JSON.parse(f.read)
+      target_teams.push(teamid) unless jsonarr.select do |item|
+        github_id_list.include?(item['login'])
+      end.empty?
+    end
   end
-end
 
-target_team_ids = target_teams.map { |name| File.basename(name, '.*') }
+  target_team_ids = target_teams.map { |name| File.basename(name, '.*') }
 
-# Get all repositories for each detected team
-target_team_ids.each do |team_id|
-  `curl -o #{team_id}_repos.json -H "Authorization: token #{token}" #{EP}teams/#{team_id}/repos`
-  `mv *json ./repos/`
+  # Get all repositories for each detected team
+  target_team_ids.each do |team_id|
+    `curl -o #{team_id}_repos.json -H "Authorization: token #{token}" #{EP}teams/#{team_id}/repos`
+    `mv *json ./repos/`
+  end
 end
 
 # Create repository URL list which should be cloned to local
@@ -87,11 +87,6 @@ clone_urls = []
 Dir.glob('./repos/*.json') do |file|
   File.open(file, 'r') do |f|
     jsonarr = JSON.parse(f.read)
-    clone_urls.push(jsonarr['clone_url'])
+    clone_urls.push(jsonarr.first['ssh_url'])
   end
 end
-
-p clone_urls
-
-# clone repositories to local
-
