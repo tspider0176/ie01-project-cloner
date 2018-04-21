@@ -58,9 +58,8 @@ if input != 'n'
   id_list.each do |id|
     puts 'getting members for each team ID...'
     `curl -o #{id}_members.json -H "Authorization: token #{token}" #{EP}teams/#{id}/members`
+    `mv *.json ./temp/`
   end
-
-  `mv *.json ./temp/`
 end
 
 # Search teams which contains student belonging to std5
@@ -79,10 +78,6 @@ target_team_ids = target_teams.map { |name| File.basename(name, '.*') }
 
 # Get all repositories for each detected team
 target_team_ids.each do |team_id|
-  `curl -o #{id}_members.json -H "Authorization: token #{token}" #{EP}teams/#{team_id}/repos`
+  `curl -o #{team_id}_repos.json -H "Authorization: token #{token}" #{EP}teams/#{team_id}/repos`
+  `mv *json ./repos/`
 end
-
-
-# Create repository list which should be cloned to local except hello world repository
-
-
