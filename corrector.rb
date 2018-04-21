@@ -90,3 +90,9 @@ Dir.glob('./repos/*.json') do |file|
     clone_urls.push(jsonarr.first['ssh_url'])
   end
 end
+
+# clone repositories to local
+clone_urls.each { |url|
+  repository_name = File.basename(url)
+  `git clone #{url} ./student_projects/#{File.basename(repository_name, '.*')}`
+}
