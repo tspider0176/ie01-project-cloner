@@ -93,8 +93,12 @@ Dir.glob('./repos/*.json') do |file|
   end
 end
 
+# remove exists local repos
+`rm -rf ./student_projects/*`
+
 # clone repositories to local
 clone_urls.each { |url|
+  puts '----------'
   repository_name = File.basename(url)
   `git clone #{url} ./student_projects/#{File.basename(repository_name, '.*')}`
 }
