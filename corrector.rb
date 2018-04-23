@@ -38,24 +38,22 @@ if input == 'y'
 
   `rm out.json`
 
-  # Get team id list
-  id_list = hash.map do |item|
-    item['id']
-  end
-
   # Get all of member URL from key 'members_url'
-  id_list.each do |id|
+  hash.map { |item| item['id'] }.each do |id|
     `curl -o #{id}_members.json -H #{TOKEN} #{EP}teams/#{id}/members`
     `mv *.json ./temp/`
   end
 
-  # Search teams which contains student belonging to std5
+  # Search teams which contains student belonging to given classroom
   target_teams = []
   classroom_roster = all_student.drop(1).select do |item|
     classroom.map(&:first).include?(item.first.split('_').first)
   end
 
-  github_id_list = classroom_roster.reject { |arr| arr[1] == '' }.map { |elem| elem[1] }
+  github_id_list = classroom_roster.reject { |arr| arr[1] == '' }.map do |elem|
+    elem[1]
+  end
+
   Dir.glob('./temp/*.json') do |file|
     teamid = File.basename(file).split('_').first
     File.open(file, 'r') do |f|
@@ -75,16 +73,16 @@ if input == 'y'
   end
 end
 
+# remove exists local repos
+`rm -rf ./student_projects/*`
+
 # Create repository URL list which should be cloned to local
 Dir.glob('./repos/*.json') do |file|
   File.open(file, 'r') do |f|
     jsonarr = JSON.parse(f.read)
     ssh_url = jsonarr.first['ssh_url']
     puts '----------'
-    repository_name = File.basename(ssh_url)
-    `git clone #{ssh_url} ./student_projects/#{File.basename(repository_name, '.*')}`
+    dir_name = File.basename(File.basename(ssh_url), '.*')
+    `git clone #{ssh_url} ./student_projects/#{dir_name}`
   end
 end
-
-# remove exists local repos
-`rm -rf ./student_projects/*`
