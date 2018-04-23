@@ -22,39 +22,49 @@ unless ARGV[0].nil? || ARGV[1].nil?
   end
 end
 
-puts 'Update team list?:(y/n)'
-printf '> '
-input = gets.chomp
+puts 'Update team list? (y/n)'
+print '> '
+input = STDIN.gets.chomp
 
 if input == 'y'
-  # Get by GitHub API
+  # Get all teams from ie03-aizu organization
   `curl -o out.json -H #{TOKEN} #{EP}orgs/ie03-aizu/teams`
 
-  hash = {}
-  # Get all teams from out.json
+  all_team = {}
+  # Preserve all teams to json file
   File.open('out.json', 'r') do |f|
-    hash = JSON.parse(f.read)
+    all_team = JSON.parse(f.read)
   end
 
   `rm out.json`
 
-  # Get all of member URL from key 'members_url'
-  hash.map { |item| item['id'] }.each do |id|
+  # Get all member URL from API
+  # After this op, temp/ dir contains all team member info.
+  all_team.map { |item| item['id'] }.each do |id|
     `curl -o #{id}_members.json -H #{TOKEN} #{EP}teams/#{id}/members`
     `mv *.json ./temp/`
   end
 
-  # Search teams which contains student belonging to given classroom
-  target_teams = []
+  # Drop header from classroom_roster.csv
+  # Create a list which contains students on mailing list
+  p all_student
   classroom_roster = all_student.drop(1).select do |item|
-    classroom.map(&:first).include?(item.first.split('_').first)
+    student_id = item.first.split('_').first
+    classroom.map(&:first).include?(student_id)
   end
 
+  # Remove students who didn't have GitHub Name from list
   github_id_list = classroom_roster.reject { |arr| arr[1] == '' }.map do |elem|
     elem[1]
   end
 
+  puts 'Students in given classroom'
+  p classroom_roster
+
+  # Search teams which contains student who are in mailing list
+  target_teams = []
   Dir.glob('./temp/*.json') do |file|
+    puts "Seeing #{file}..."
     teamid = File.basename(file).split('_').first
     File.open(file, 'r') do |f|
       jsonarr = JSON.parse(f.read)
@@ -73,7 +83,7 @@ if input == 'y'
   end
 end
 
-# remove exists local repos
+# remove old local repos
 `rm -rf ./student_projects/*`
 
 # Create repository URL list which should be cloned to local
