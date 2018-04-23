@@ -10,23 +10,7 @@ File.open('./TOKEN', 'r') do |f|
 end
 TOKEN = "\"Authorization: token #{token}\"".freeze
 
-all_student = []
-classroom = []
-unless ARGV[0].nil? || ARGV[1].nil?
-  CSV.read(ARGV[1], headers: false).each do |data|
-    all_student.push(data)
-  end
-
-  CSV.read(ARGV[0], headers: false).each do |data|
-    classroom.push(data)
-  end
-end
-
-puts 'Update team list? (y/n)'
-print '> '
-input = STDIN.gets.chomp
-
-if input == 'y'
+def update(all_student, classroom)
   # Get all teams from ie03-aizu organization
   `curl -o out.json -H #{TOKEN} #{EP}orgs/ie03-aizu/teams`
 
@@ -47,7 +31,6 @@ if input == 'y'
 
   # Drop header from classroom_roster.csv
   # Create a list which contains students on mailing list
-  p all_student
   classroom_roster = all_student.drop(1).select do |item|
     student_id = item.first.split('_').first
     classroom.map(&:first).include?(student_id)
@@ -58,9 +41,6 @@ if input == 'y'
     elem[1]
   end
 
-  puts 'Students in given classroom'
-  p classroom_roster
-
   # Search teams which contains student who are in mailing list
   target_teams = []
   Dir.glob('./temp/*.json') do |file|
@@ -68,9 +48,8 @@ if input == 'y'
     teamid = File.basename(file).split('_').first
     File.open(file, 'r') do |f|
       jsonarr = JSON.parse(f.read)
-      target_teams.push(teamid) unless jsonarr.select do |item|
-        github_id_list.include?(item['login'])
-      end.empty?
+      p jsonarr
+      target_teams.push(teamid) unless jsonarr.select { |item| github_id_list.include?(item['login']) }.empty?
     end
   end
 
@@ -81,6 +60,26 @@ if input == 'y'
     `curl -o #{team_id}_repos.json -H #{TOKEN} #{EP}teams/#{team_id}/repos`
     `mv *json ./repos/`
   end
+end
+
+all_student = []
+classroom = []
+unless ARGV[0].nil? || ARGV[1].nil?
+  CSV.read(ARGV[1], headers: false).each do |data|
+    all_student.push(data)
+  end
+
+  CSV.read(ARGV[0], headers: false).each do |data|
+    classroom.push(data)
+  end
+end
+
+unless ARGV[0].nil? || ARGV[1].nil?
+  puts 'Update team list? (y/n)'
+  print '> '
+  input = STDIN.gets.chomp
+
+  update(all_student, classroom) if input == 'y'
 end
 
 # remove old local repos
