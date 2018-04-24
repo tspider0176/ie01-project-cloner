@@ -83,6 +83,9 @@ def update(all_student, classroom)
 end
 
 unless ARGV[0].nil? || ARGV[1].nil?
+  all_student = []
+  classroom = []
+
   CSV.read(ARGV[1], headers: false).each do |data|
     all_student.push(data)
   end
