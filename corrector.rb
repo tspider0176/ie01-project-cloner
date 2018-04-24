@@ -12,7 +12,7 @@ TOKEN = "\"Authorization: token #{token}\"".freeze
 
 def update(all_student, classroom)
   # Get all teams from ie03-aizu organization
-  `curl -o out.json -H #{TOKEN} #{EP}orgs/ie03-aizu/teams`
+  `curl -o out.json -H #{TOKEN} #{EP}orgs/ie03-aizu/teams?per_page=100`
 
   all_team = {}
   # Preserve all teams to json file
@@ -47,9 +47,10 @@ def update(all_student, classroom)
     puts "Seeing #{file}..."
     teamid = File.basename(file).split('_').first
     File.open(file, 'r') do |f|
-      jsonarr = JSON.parse(f.read)
-      p jsonarr
-      target_teams.push(teamid) unless jsonarr.select { |item| github_id_list.include?(item['login']) }.empty?
+      team_users = JSON.parse(f.read)
+      # p team_users.map { |item| item['login'] }
+      # if there exists students who are contained to github_id_list
+      target_teams.push(teamid) unless team_users.select { |item| github_id_list.include?(item['login']) }.empty?
     end
   end
 
@@ -85,6 +86,9 @@ end
 # remove old local repos
 `rm -rf ./student_projects/*`
 
+puts '=================================================='
+puts 'Clone all repositories to ./student_projects'
+puts '=================================================='
 # Create repository URL list which should be cloned to local
 Dir.glob('./repos/*.json') do |file|
   File.open(file, 'r') do |f|
