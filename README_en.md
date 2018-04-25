@@ -40,6 +40,8 @@ example:
 $ ruby corrector.rb 11-3002-IE03-std5.csv classroom_roster.csv
 ```
 
+It may take some time depending on network status.
+
 #### from the 2nd time
 
 ```sh
