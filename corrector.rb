@@ -94,11 +94,7 @@ unless ARGV[0].nil? || ARGV[1].nil?
     classroom.push(data)
   end
 
-  puts 'Update team list? (y/n)'
-  print '> '
-  input = STDIN.gets.chomp
-
-  update(all_student, classroom) if input == 'y'
+  update(all_student, classroom)
 end
 
 # remove old local repos
