@@ -1,4 +1,4 @@
-## IE1 Corrector
+## IE1 Project Cloner
 m5211143 Tomohiro Saito
 
 簡易プロジェクトクローニングツール for IE01

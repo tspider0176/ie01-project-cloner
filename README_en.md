@@ -1,4 +1,4 @@
-## IE1 Corrector
+## IE1 Project Cloner
 m5211143 Tomohiro Saito
 
 Simple project cloning tool for IE01 class
