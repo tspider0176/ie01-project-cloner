@@ -64,6 +64,7 @@ def clone_target_team_ids(classroom_roster)
   clone_target_teams(classroom_roster).map { |name| File.basename(name, '.*') }
 end
 
+# Update all local student information
 def update(all_student, classroom)
   # Get all team and its members to local
   store_all_team_member
