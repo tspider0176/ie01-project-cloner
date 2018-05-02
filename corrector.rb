@@ -50,10 +50,11 @@ def clone_target_teams(classroom_roster)
   target_teams = []
   Dir.glob('./temp/*.json') do |file|
     puts "Seeing #{file}..."
+    # extract team ID from file name
     teamid = File.basename(file).split('_').first
     File.open(file, 'r') do |f|
       team_users = JSON.parse(f.read)
-      # if there exists students who are contained to github_id_list,
+      # if it exists students who are contained to github_id_list,
       target_teams.push(teamid) unless members?(team_users, classroom_roster)
     end
   end
@@ -85,14 +86,14 @@ end
 
 unless ARGV[0].nil? || ARGV[1].nil?
   all_student = []
-  classroom = []
+  classroom_students = []
 
   CSV.read(ARGV[1], headers: false).each do |data|
     all_student.push(data)
   end
 
   CSV.read(ARGV[0], headers: false).each do |data|
-    classroom.push(data)
+    classroom_students.push(data)
   end
 
   update(all_student, classroom)
@@ -101,13 +102,14 @@ end
 # remove old local repos
 `rm -rf ./student_projects/*`
 
-puts "Clone all repo.s created by students in #{ARGV[0]} to ./student_projects"
+puts "Clone all repos created by students in #{ARGV[0]} to ./student_projects"
 # Create repository URL list which should be cloned to local
 Dir.glob('./repos/*.json') do |file|
   File.open(file, 'r') do |f|
     jsonarr = JSON.parse(f.read)
     ssh_url = jsonarr.first['ssh_url']
     puts '----------'
+    # Clone target repository to local
     dir_name = File.basename(File.basename(ssh_url), '.*')
     `git clone #{ssh_url} ./student_projects/#{dir_name}`
   end
