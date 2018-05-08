@@ -96,7 +96,7 @@ unless ARGV[0].nil? || ARGV[1].nil?
     classroom_students.push(data)
   end
 
-  update(all_student, classroom)
+  update(all_student, classroom_students)
 end
 
 # remove old local repos
