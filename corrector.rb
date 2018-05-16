@@ -99,6 +99,10 @@ unless ARGV[0].nil? || ARGV[1].nil?
   update(all_student, classroom_students)
 end
 
+# Output already exists repos
+puts 'Update...'
+`ls -l ./student_projects`
+
 # remove old local repos
 `rm -rf ./student_projects/*`
 
